@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio - Cosmic Glass Statico</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet"> 
+<style>
+  /* --- VARIABILI COSMIC GLASS --- */
+  :root {
+    --bg-dark: #0A0A1F;
+    --cosmic-accent: #00FFFF;
+    --card-bg-blur: rgba(255, 255, 255, 0.05); 
+    --card-border-blur: rgba(255, 255, 255, 0.1);
+    --text-light: #E0E0FF;
+    --text-dark: #A0A0C0;
+    --header-glow: 0 0 10px rgba(138, 43, 226, 0.6), 0 0 20px rgba(138, 43, 226, 0.3);
+  }
+
+  /* --- STILE BASE & SFONDO COSMICO CON VIDEO --- */
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-dark); 
+    color: var(--text-light);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    overflow-x: auto; 
+    position: relative;
+    background-image: none;
+    background-attachment: fixed;
+  }
+
+  /* --- STILE VIDEO DI SFONDO --- */
+  #background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    width: auto;
+    height: auto;
+    z-index: -2; /* Manda il video dietro a tutto */
+    object-fit: contain; 
+    overflow: auto;
+    object-position: 50% 50%;
+  }
+
+  /* --- HEADER --- */
+  header {
+    padding: 40px 50px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-light);
+    text-shadow: var(--header-glow);
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-top: 5px;
+    color: var(--text-dark);
+  }
+
+  /* --- GRIGLIA PULITA (4 COLONNE) --- */
+  .gallery-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(280px, 1fr)); 
+    gap: 40px; 
+    padding: 50px; 
+    max-width: 1400px;
+    margin: 0 auto;
+    z-index: 5;
+    position: relative;
+  }
+  @media (max-width: 1200px) {
+    .gallery-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .gallery-container {
+      grid-template-columns: repeat(1, 1fr);
+      padding: 20px;
+    }
+  }
+
+
+  /* --- LE CARD (L'EFFETTO VETRO COSMICO) --- */
+  .project {
+    cursor: pointer; 
+    background: var(--card-bg-blur); 
+    border-radius: 15px; 
+    border: 1px solid var(--card-border-blur); 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 15px var(--cosmic-accent); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+    overflow: hidden; 
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease-out; 
+  }
+
+  .project:hover {
+    transform: translateY(-8px) scale(1.02); 
+    box-shadow: 0 0 40px var(--cosmic-accent), 0 0 20px rgba(0, 0, 0, 0.6); 
+  }
+
+  .project img {
+    width: 100%;
+    height: auto; 
+    object-fit: contain; 
+    display: block;
+    transition: transform 0.6s ease-out;
+  }
+
+  .project:hover img {
+    transform: scale(1.05); 
+  }
+
+  .caption {
+    padding: 20px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-light);
+  }
+
+  .caption span {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--text-dark);
+  }
+
+  /* --- LIGHTBOX --- */
+  #modal {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95); 
+    z-index: 2000;
+    padding: 40px;
+    overflow-y: scroll;
+    cursor: pointer; 
+  }
+
+  #modal-content {
+    max-width: 900px;
+    margin: 50px auto;
+    background: var(--bg-dark); 
+    color: var(--text-light);
+    border-radius: 15px;
+    border: 1px solid var(--cosmic-accent);
+    box-shadow: 0 0 30px var(--cosmic-accent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.4s ease;
+    cursor: default; 
+    overflow: auto;
+  }
+
+  #modal.active #modal-content {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  #modal-img {
+    width: 100%;
+    height: auto;
+    max-height: 500px; 
+    object-fit: contain;
+    display: block;
+    border-bottom: 1px solid var(--card-border-blur);
+    margin-bottom: 20px;
+  }
+
+  .modal-text-content {
+    padding: 30px;
+  }
+
+  #modal-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--cosmic-accent);
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+    margin: 0 0 15px 0;
+    line-height: 1.1;
+  }
+  
+  #modal-desc {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-dark);
+  }
+
+  #close-btn {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    font-size: 2rem;
+    color: var(--text-light);
+    background: none;
+    border: 1px solid var(--text-light);
+    padding: 10px 20px;
+    cursor: pointer;
+    z-index: 2001;
+    transition: all 0.2s;
+  }
+
+  #close-btn:hover {
+    color: white;
+    background: var(--cosmic-accent);
+    border-color: var(--cosmic-accent);
+  }
+</style>
+</head>
+<body>
+
+  <video autoplay loop muted playsinline id="background-video">
+    <source src="immagini/galassia-4k.mp4" type="video/mp4">
+    Il tuo browser non supporta il tag video.
+  </video>
+  
+  <header>
+    <h1>Rungi Christian</h1>
+    <div class="subtitle">Digital Portfolio // rungichris</div>
+  </header>
+  
+  <div class="gallery-container">
+    <div class="project" data-title="FC INTER vs AC MILAN" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/inter-milan-grsfica-ufficiale-milan.jpg" alt="Artwork 01">
+      <div class="caption">FC INTER vs AC Milan <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="FC INTER vs AC MILAN" data-subtitle="Matchday Graphic - InterInside" data-desc="Grafica per INTERINSIDE || Work for INTERINSIDE.">
+      <img src="immagini/inter-milan-grafica-ufficiale-interinside.jpg" alt="Artwork 02">
+      <div class="caption">FC Inter vs AC Milan <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="AC MILAN vs AS ROMA" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/milan-roma-corrett.png" alt="Artwork 03">
+      <div class="caption">AC Milan vs AS Roma <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="AC MILAN vs SSC NAPOLI" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/MILAN-NAPOLI-PORTFOLIO.png" alt="Artwork 04">
+      <div class="caption">AC Milan vs SSC Napoli <span>Matchday Graphic</span></div>
+    </div>
+    
+    <div class="project" data-title="AC MILAN vs FC BOLOGNA" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/milan-bolo.png" alt="Artwork 05">
+      <div class="caption">AC Milan vs FC Bologna <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="FC JUVENTUS vs AC MILAN" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/milan-juventus.png" alt="Artwork 06">
+      <div class="caption">FC Juventus vs AC MILAN <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="AC MILAN vs FC EMPOLI" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Tributo per Akira Toriyama || Work for ACMILANINSIDE || Tribute to pay respect to Akira Toriyama.">
+      <img src="immagini/milan-empoli.png" alt="Artwork 07">
+      <div class="caption">AC Milan vs FC Empoli <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="ASF FIORENTINA vs AC MILAN" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/fiorentina-milan.png" alt="Artwork 08">
+      <div class="caption">ASF Fiorentina vs AC Milan <span>Matchday Graphic</span></div>
+    </div>
+    
+    <div class="project" data-title="AC Milan vs Atalanta BC" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/atalanta-milan.png" alt="Artwork 09">
+      <div class="caption">AC Milan vs Atalanta BC <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="AC MILAN vs SLAVIA PRAHA" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE || Work for ACMILANINSIDE.">
+      <img src="immagini/milan-slavia.png" alt="Artwork 10">
+      <div class="caption">AC Milan vs Slavia Praha <span>Matchday Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="AC MILAN vs FC INTER" data-subtitle="Matchday Graphic" data-desc="Grafica per ACMILANINSIDE. || Work for ACMILANINSIDE.">
+      <img src="immagini/Milan inter grafica finaleeee.jpg" alt="Artwork 11">
+      <div class="caption">AC Milan vs FC Inter <span>Transfer Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="CHRISTOPHER NKUNKU - WELCOME TO AC MILAN" data-subtitle="Transfer Graphic" data-desc="Grafica annuncio Christopher Nkunku per ACMILANINSIDE || Christopher Nkunku's transfer graphic for ACMILANINSIDE.">
+      <img src="immagini/nkunku-ac-milan.png" alt="Artwork 12">
+      <div class="caption">Christopher Nkunku - Welcome to AC Milan <span>Transfer Graphic</span></div>
+    </div>
+    
+    <div class="project" data-title="ADRIEN RABIOT - WELCOME TO AC MILAN" data-subtitle="Transfer Graphic" data-desc="Grafica annuncio Adrien Rabiot per LORENZO DE ANGELIS || Adrien Rabiot's transfer graphic for LORENZO DE ANGELIS.">
+      <img src="immagini/rabiot-milan.png" alt="Artwork 13">
+      <div class="caption">Adrien Rabiot - Welcome to AC Milan <span>Transfer Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="MIKE MAIGNAN - ARTWORK" data-subtitle="Player's Artwork" data-desc="Artwork Mike Maignan per ACMILANINSIDE. || Mike Maignan's artwork for ACMILANINSIDE.">
+      <img src="immagini/mike-maignan-grafica-ufficiale.png" alt="Progetto 14">
+      <div class="caption">Mike Maignan - Artwork <span>Player's Artwork</span></div>
+    </div>
+
+    <div class="project" data-title="RAFAEL LEAO - ARTWORK" data-subtitle="Player's Artwork" data-desc="Artwork Rafael leao per ACMILANINSIDE. || Rafael Leao's artwork for ACMILANINSIDE.">
+      <img src="immagini/grafica-leao-corona.png" alt="Artwork 15">
+      <div class="caption">Rafael Leao - Artwork <span>Player's Artwork</span></div>
+    </div>
+
+    <div class="project" data-title="LUKA MODRIC - WELCOME TO AC MILAN" data-subtitle="Transfer Graphic" data-desc="Grafica annuncio Luka Modric per ACMILANINSIDE || Luka Modric's transfer graphic for ACMILANINSIDE.">
+      <img src="immagini/modric-welcome.png" alt="Artwork 16">
+      <div class="caption">Luka Modric - Welcome to AC Milan <span>Transfer Graphic</span></div>
+    </div>
+    
+    <div class="project" data-title="THE NIGHT OF MY DREAMS" data-subtitle="Artwork" data-desc="Artwork - Christian Rungi">
+      <img src="immagini/ragazza-volante.png" alt="Artwork 17">
+      <div class="caption">The Night Of My Dreams - Christian Rungi <span>  Artwork</span></div>
+    </div>
+
+    <div class="project" data-title="LUKA MODRIC - GOAL'S GRAPHIC" data-subtitle="Player's Graphic" data-desc="Grafica goal Luka Modric per ACMILANINSIDE. || Luka Modric's goal graphic for ACMILANINSIDE.">
+      <img src="immagini/modric-goal.png" alt="Artwork 18">
+      <div class="caption">Luka Modric - Goal's Graphic <span>Player's Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="LUKA MODRIC - ASSIST GRAPHIC" data-subtitle="Player's Graphic" data-desc="Grafica assist Luka Modric per ACMILANINSIDE || Luka Modric's assist graphic for ACMILANINSIDE.">
+      <img src="immagini/modric-assist.png" alt="Artwork 19">
+      <div class="caption">Luka Modric - Assist Graphic <span>Player's Graphic</span></div>
+    </div>
+
+    <div class="project" data-title="AC MILAN FULL TIME GRAPHIC" data-subtitle="ACMILANINSIDE'S Graphic" data-desc="Grafica full time per ACMILANINSIDE. || Full time graphic for ACMILANINSIDE.">
+      <img src="immagini/milan-full-time.png" alt="Artwork 20">
+      <div class="caption">AC Milan Full Time Graphic <span>ACMILANINSIDE's Graphic</span></div>
+    </div>
+    
+    </div>
+
+  <div id="modal">
+    <button id="close-btn">&times;</button>
+    <div id="modal-content">
+      <img id="modal-img" src="" alt="Dettaglio Progetto">
+      <div class="modal-text-content">
+        <h2 id="modal-title">Titolo Progetto</h2>
+        <p id="modal-desc">Descrizione...</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // --- GESTIONE DEL MODALE (LightBox) ---
+  const projects = document.querySelectorAll('.project');
+  const modal = document.getElementById('modal');
+  const modalImg = document.getElementById('modal-img');
+  const modalTitle = document.getElementById('modal-title');
+  const modalDesc = document.getElementById('modal-desc');
+  const closeBtn = document.getElementById('close-btn');
+
+  projects.forEach(project => {
+    project.addEventListener('click', () => {
+      openModal(project);
+    });
+  });
+
+  function openModal(el) {
+    const title = el.getAttribute('data-title');
+    const desc = el.getAttribute('data-desc');
+    const imgSrc = el.querySelector('img').src; 
+
+    modalImg.src = imgSrc;
+    modalTitle.textContent = title;
+    modalDesc.textContent = desc;
+
+    modal.style.display = 'block';
+    setTimeout(() => {
+      modal.classList.add('active');
+    }, 10);
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 400); 
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+</script>
+
+</body>
+</html>
