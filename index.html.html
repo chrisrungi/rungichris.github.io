@@ -17,6 +17,25 @@
     --header-glow: 0 0 10px rgba(138, 43, 226, 0.6), 0 0 20px rgba(138, 43, 226, 0.3);
   }
 
+  /* --- SCROLLBAR COSMICA --- */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-dark); 
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--cosmic-accent), #8A2BE2); /* Sfumatura Ciano-Viola */
+    border-radius: 5px;
+    border: 2px solid var(--bg-dark); 
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ffffff; 
+  }
+  
   /* --- STILE BASE & SFONDO COSMICO CON VIDEO --- */
   body {
     margin: 0;
@@ -25,11 +44,36 @@
     color: var(--text-light);
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
-    overflow-x: auto; 
+    overflow-x: hidden; 
     position: relative;
     background-image: none;
     background-attachment: fixed;
+    cursor: default;
   }
+
+  /* --- CURSORE NEBULA --- */
+  #cursor-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(0, 255, 255, 0.05) 40%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none; 
+    transform: translate(-50%, -50%); 
+    z-index: 1; 
+    transition: width 0.3s, height 0.3s;
+    mix-blend-mode: screen; 
+  }
+
+  /* Nascondi il cursore nebula su dispositivi touch/mobile */
+  @media (hover: none) and (pointer: coarse) {
+    #cursor-glow {
+      display: none;
+    }
+  }
+
 
   /* --- STILE VIDEO DI SFONDO --- */
   #background-video {
@@ -40,9 +84,8 @@
     min-height: 100vh;
     width: auto;
     height: auto;
-    z-index: -2; /* Manda il video dietro a tutto */
-    object-fit: contain; 
-    overflow: auto;
+    z-index: -2; 
+    object-fit: cover; 
     object-position: 50% 50%;
   }
 
@@ -92,9 +135,10 @@
   }
 
 
-  /* --- LE CARD (L'EFFETTO VETRO COSMICO) --- */
+  /* --- LE CARD (L'EFFETTO VETRO COSMICO & SCROLL REVEAL START) --- */
   .project {
-    cursor: pointer; 
+    cursor: pointer;
+    position: relative; 
     background: var(--card-bg-blur); 
     border-radius: 15px; 
     border: 1px solid var(--card-border-blur); 
@@ -102,10 +146,48 @@
     backdrop-filter: blur(10px); 
     -webkit-backdrop-filter: blur(10px); 
     overflow: hidden; 
-    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease-out; 
+    /* MODIFICATO: Aggiunta transizione opacity per lo Scroll Reveal */
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease-out, opacity 0.8s ease-out; 
+    
+    /* Stato Iniziale (Nascosto) */
+    opacity: 0; 
+    transform: translateY(50px); 
+  }
+  
+  /* Stato Finale (Visibile) */
+  .project.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 
-  .project:hover {
+  /* --- EFFETTO RIFLESSO (GLARE) --- */
+  .project::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: rotate(45deg) translateX(-150%);
+    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    pointer-events: none; 
+    z-index: 10; 
+    background: linear-gradient(
+      105deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  .project:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translateX(150%);
+  }
+  
+  /* Assicura che l'hover funzioni bene anche con la classe 'visible' */
+  .project.visible:hover {
     transform: translateY(-8px) scale(1.02); 
     box-shadow: 0 0 40px var(--cosmic-accent), 0 0 20px rgba(0, 0, 0, 0.6); 
   }
@@ -221,9 +303,72 @@
     background: var(--cosmic-accent);
     border-color: var(--cosmic-accent);
   }
+
+  /* --- FOOTER --- */
+  footer {
+    margin-top: 50px;
+    padding: 40px 20px;
+    text-align: center;
+    background: linear-gradient(to top, rgba(10, 10, 31, 1), rgba(10, 10, 31, 0));
+    position: relative;
+    z-index: 5;
+  }
+
+  .footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  footer p {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    margin: 10px 0;
+  }
+
+  footer strong {
+    color: var(--cosmic-accent);
+  }
+
+  .social-links {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .social-links a {
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border: 1px solid var(--cosmic-accent);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .social-links a:hover {
+    background: var(--cosmic-accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 15px var(--cosmic-accent);
+    transform: translateY(-3px);
+  }
+  
+  .copyright {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
 </style>
 </head>
 <body>
+
+  <div id="cursor-glow"></div>
 
   <video autoplay loop muted playsinline id="background-video">
     <source src="immagini/galassia-4k.mp4" type="video/mp4">
@@ -326,12 +471,12 @@
       <div class="caption">Luka Modric - Goal's Graphic <span>Player's Graphic</span></div>
     </div>
 
-    <div class="project" data-title="LUKA MODRIC - ASSIST GRAPHIC" data-subtitle="Player's Graphic" data-desc="Grafica assist Luka Modric per ACMILANINSIDE || Luka Modric's assist graphic for ACMILANINSIDE.">
+    <div class="project" data-title="LUKA MODRIC - ASSIST GRAPHIC" data-subtitle="Player's Graphic" data-desc="Grafica assist Luka Modric per ACMILANINSIDE || Luka Modric's assist graphic per ACMILANINSIDE.">
       <img src="immagini/modric-assist.png" alt="Artwork 19">
       <div class="caption">Luka Modric - Assist Graphic <span>Player's Graphic</span></div>
     </div>
 
-    <div class="project" data-title="AC MILAN FULL TIME GRAPHIC" data-subtitle="ACMILANINSIDE'S Graphic" data-desc="Grafica full time per ACMILANINSIDE. || Full time graphic for ACMILANINSIDE.">
+    <div class="project" data-title="AC MILAN FULL TIME GRAPHIC" data-subtitle="ACMILANINSIDE'S Graphic" data-desc="Grafica full time per ACMILANINSIDE. || Full time graphic per ACMILANINSIDE.">
       <img src="immagini/milan-full-time.png" alt="Artwork 20">
       <div class="caption">AC Milan Full Time Graphic <span>ACMILANINSIDE's Graphic</span></div>
     </div>
@@ -348,6 +493,16 @@
       </div>
     </div>
   </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>Designed & Developed by <strong>Christian Rungi</strong></p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/rungichris/">Instagram</a>
+      </div>
+      <p class="copyright">&copy; 2025 rungichris. All rights reserved.</p>
+    </div>
+  </footer>
 
 <script>
   // --- GESTIONE DEL MODALE (LightBox) ---
@@ -392,6 +547,36 @@
     if (e.target === modal) {
       closeModal();
     }
+  });
+
+  // --- CURSORE NEBULA ---
+  const cursorGlow = document.getElementById('cursor-glow');
+  
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.left = e.clientX + 'px';
+    cursorGlow.style.top = e.clientY + 'px';
+  });
+
+  // --- SCROLL REVEAL (Entrata Elementi) ---
+  const observerOptions = {
+    // L'elemento appare quando il 10% è visibile
+    threshold: 0.1 
+  };
+
+  const projectObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Aggiungi la classe 'visible' per avviare la transizione CSS
+        entry.target.classList.add('visible');
+        // Smetti di osservare una volta che l'elemento è apparso
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Osserva tutti gli elementi con la classe .project
+  document.querySelectorAll('.project').forEach(el => {
+    projectObserver.observe(el);
   });
 </script>
 
